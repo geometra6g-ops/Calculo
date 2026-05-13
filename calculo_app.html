@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Los Cuatro Problemas — El nacimiento del cálculo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f1e8d3;
+    --paper-dark:#e6dabd;
+    --ink:#2a1f14;
+    --ink-soft:#4a3826;
+    --red:#a02818;
+    --blue:#1e3a5f;
+    --gold:#8a6a1d;
+    --green:#3e5a2a;
+    --shadow:rgba(60,40,20,0.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper);color:var(--ink);font-family:'EB Garamond',serif;font-size:18px;line-height:1.6;overflow-x:hidden}
+  body{
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(138,106,29,0.08), transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(160,40,24,0.06), transparent 50%),
+      repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(74,56,38,0.015) 2px, rgba(74,56,38,0.015) 3px);
+    min-height:100vh;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
+    background-image:
+      radial-gradient(circle at 15% 25%, rgba(110,80,40,0.12) 0%, transparent 8%),
+      radial-gradient(circle at 85% 60%, rgba(110,80,40,0.10) 0%, transparent 6%),
+      radial-gradient(circle at 45% 85%, rgba(110,80,40,0.08) 0%, transparent 5%);
+    mix-blend-mode:multiply;
+  }
+  header{
+    text-align:center;padding:80px 24px 50px;position:relative;z-index:2;
+    border-bottom:1px solid rgba(74,56,38,0.2);
+  }
+  header .ornament{
+    font-family:'Cormorant Garamond',serif;color:var(--gold);font-size:28px;letter-spacing:0.4em;margin-bottom:18px;
+  }
+  header h1{
+    font-family:'Cormorant Garamond',serif;font-weight:500;
+    font-size:clamp(2.2rem,5.5vw,4.2rem);line-height:1.05;letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+  header h1 em{font-style:italic;color:var(--red)}
+  header .subtitle{
+    margin-top:18px;font-style:italic;font-size:1.15rem;color:var(--ink-soft);
+    max-width:680px;margin-left:auto;margin-right:auto;
+  }
+  header .date{
+    margin-top:24px;font-family:'JetBrains Mono',monospace;font-size:0.85rem;
+    letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;
+  }
+
+  .intro{
+    max-width:780px;margin:60px auto;padding:0 32px;position:relative;z-index:2;
+    font-size:1.1rem;
+  }
+  .intro p{margin-bottom:16px;text-indent:2em}
+  .intro p:first-child::first-letter{
+    font-family:'Cormorant Garamond',serif;font-size:4.2rem;
+    float:left;line-height:0.85;padding:8px 10px 0 0;color:var(--red);font-weight:600;
+  }
+  .intro p:first-child{text-indent:0}
+
+  .problems-grid{
+    max-width:1280px;margin:80px auto 40px;padding:0 32px;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(540px,1fr));gap:48px;
+    position:relative;z-index:2;
+  }
+
+  .problem{
+    background:linear-gradient(180deg, rgba(255,250,235,0.4), rgba(230,218,189,0.3));
+    border:1px solid rgba(74,56,38,0.18);
+    padding:36px 32px 32px;border-radius:2px;
+    box-shadow:0 4px 24px var(--shadow), inset 0 1px 0 rgba(255,250,235,0.5);
+    position:relative;
+  }
+  .problem::before{
+    content:'';position:absolute;top:-1px;left:-1px;right:-1px;height:6px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity:0.6;
+  }
+  .problem .number{
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;
+    color:var(--gold);font-size:0.95rem;letter-spacing:0.35em;
+    text-transform:uppercase;margin-bottom:6px;
+  }
+  .problem h2{
+    font-family:'Cormorant Garamond',serif;font-weight:600;
+    font-size:2rem;line-height:1.1;color:var(--ink);margin-bottom:14px;
+  }
+  .problem .historical{
+    font-style:italic;color:var(--ink-soft);margin-bottom:20px;
+    border-left:2px solid var(--red);padding-left:14px;font-size:1rem;
+  }
+
+  .canvas-wrap{
+    background:#faf3e0;border:1px solid rgba(74,56,38,0.25);
+    border-radius:2px;margin:16px 0;position:relative;
+    box-shadow:inset 0 0 20px rgba(74,56,38,0.05);
+    aspect-ratio:3/2;
+  }
+  canvas{display:block;width:100%;height:100%;cursor:crosshair}
+
+  .controls{
+    display:flex;flex-wrap:wrap;gap:14px 24px;margin-top:16px;align-items:center;
+    padding:14px 16px;background:rgba(74,56,38,0.05);border-radius:2px;
+  }
+  .control{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
+  .control label{
+    font-family:'JetBrains Mono',monospace;font-size:0.72rem;
+    color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.15em;
+  }
+  .control .value{
+    font-family:'JetBrains Mono',monospace;font-size:0.95rem;color:var(--red);font-weight:500;
+  }
+  input[type="range"]{
+    -webkit-appearance:none;appearance:none;width:100%;height:3px;
+    background:rgba(74,56,38,0.3);outline:none;border-radius:0;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:18px;height:18px;
+    background:var(--red);border-radius:50%;cursor:pointer;
+    border:2px solid var(--paper);box-shadow:0 1px 4px var(--shadow);
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:18px;height:18px;background:var(--red);border-radius:50%;cursor:pointer;
+    border:2px solid var(--paper);box-shadow:0 1px 4px var(--shadow);
+  }
+
+  .readout{
+    margin-top:18px;padding:16px 18px;
+    background:rgba(30,58,95,0.06);border-left:3px solid var(--blue);
+    font-family:'EB Garamond',serif;
+  }
+  .readout > div{margin-bottom:4px}
+  .readout .formula{
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.15rem;
+    color:var(--blue);margin:6px 0;letter-spacing:0.01em;
+  }
+  .readout .formula b{font-weight:600;color:var(--red);font-style:normal;font-family:'JetBrains Mono',monospace;font-size:1rem}
+  .readout small{color:var(--ink-soft);font-style:italic;display:block;margin-top:8px}
+
+  .resolution{
+    margin-top:22px;padding:18px;background:rgba(62,90,42,0.07);
+    border:1px dashed rgba(62,90,42,0.4);border-radius:2px;font-size:0.98rem;
+  }
+  .resolution strong{
+    font-family:'Cormorant Garamond',serif;color:var(--green);font-weight:600;
+    font-size:1.05rem;display:block;margin-bottom:6px;letter-spacing:0.05em;
+  }
+
+  .toggle-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .toggle-btn{
+    background:transparent;border:1px solid rgba(74,56,38,0.3);
+    color:var(--ink-soft);padding:8px 14px;cursor:pointer;
+    font-family:'JetBrains Mono',monospace;font-size:0.75rem;
+    letter-spacing:0.1em;text-transform:uppercase;
+    transition:all 0.2s;
+  }
+  .toggle-btn:hover{border-color:var(--red);color:var(--red)}
+  .toggle-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+  .epilogue{
+    max-width:880px;margin:100px auto;padding:60px 40px;
+    position:relative;z-index:2;
+    border-top:1px solid rgba(74,56,38,0.2);
+    border-bottom:1px solid rgba(74,56,38,0.2);
+    text-align:center;
+  }
+  .epilogue h3{
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;
+    font-size:2.4rem;color:var(--ink);margin-bottom:24px;
+  }
+  .epilogue p{font-size:1.1rem;margin-bottom:14px;color:var(--ink-soft)}
+  .epilogue .signature{
+    margin-top:32px;font-style:italic;color:var(--gold);font-size:0.95rem;
+    letter-spacing:0.2em;text-transform:uppercase;
+  }
+
+  @media (max-width:640px){
+    .problems-grid{grid-template-columns:1fr;gap:32px;padding:0 16px}
+    .problem{padding:24px 20px}
+    header{padding:48px 20px 32px}
+    .intro{padding:0 20px;margin:40px auto}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="ornament">· ❦ ·</div>
+  <h1>Los Cuatro <em>Problemas</em><br>que engendraron el Cálculo</h1>
+  <div class="subtitle">Un manuscrito interactivo sobre cómo Newton y Leibniz, entre 1665 y 1675, resolvieron simultáneamente cuatro enigmas que habían atormentado a los geómetras durante dos mil años.</div>
+  <div class="date">Anno Mirabilis · MDCLXVI</div>
+</header>
+
+<section class="intro">
+  <p>En el verano de 1665, la peste bubónica cerró la Universidad de Cambridge. Un joven de veintitrés años llamado Isaac Newton se refugió en la finca familiar de Woolsthorpe. En ese aislamiento concibió la teoría de la gravitación, descompuso la luz blanca con un prisma, y resolvió de un solo golpe cuatro problemas que habían resistido a Arquímedes, a Kepler, a Fermat y a Descartes.</p>
+  <p>Estos cuatro problemas parecían no tener relación entre sí. Newton —y al mismo tiempo, en Hannover, Gottfried Wilhelm Leibniz— descubrió que en realidad eran <em>el mismo problema visto desde cuatro ángulos</em>. Movés los controles, y la curva responde.</p>
+</section>
+
+<div class="problems-grid">
+
+  <article class="problem" id="p1">
+    <div class="number">— Problema Primero —</div>
+    <h2>La recta tangente</h2>
+    <div class="historical">"Dada una curva cualquiera, trazar la recta que la toca en un solo punto sin cortarla." Crucial para diseñar lentes telescópicas y entender la reflexión de la luz.</div>
+
+    <div class="canvas-wrap"><canvas id="c1"></canvas></div>
+
+    <div class="controls">
+      <div class="control">
+        <label>Punto sobre la curva · x = <span class="value" id="v1x">1.50</span></label>
+        <input type="range" id="s1x" min="-2.5" max="2.5" step="0.01" value="1.5">
+      </div>
+      <div class="control">
+        <label>Ancho del intervalo · Δx = <span class="value" id="v1h">0.80</span></label>
+        <input type="range" id="s1h" min="0.01" max="1.5" step="0.01" value="0.8">
+      </div>
+    </div>
+
+    <div class="readout">
+      <div>Pendiente de la <em>secante</em> (cuerda): <span class="formula"><b id="r1sec">2.20</b></span></div>
+      <div>Pendiente de la <em>tangente</em> (cuando Δx→0): <span class="formula"><b id="r1tan">3.00</b></span></div>
+      <small>La curva es y = x². Achicá Δx y observá cómo la secante converge a la tangente.</small>
+    </div>
+
+    <div class="resolution">
+      <strong>La derivada lo resuelve</strong>
+      Tomar el límite cuando Δx tiende a cero transforma la secante en tangente: f ′(x) = 2x. La pendiente de la tangente <em>es</em> la derivada.
+    </div>
+  </article>
+
+  <article class="problem" id="p2">
+    <div class="number">— Problema Segundo —</div>
+    <h2>La velocidad instantánea</h2>
+    <div class="historical">Galileo demostró en 1638 que un cuerpo en caída libre recorre y = ½gt². Pero, ¿qué velocidad lleva exactamente en el instante t? Δt no puede ser cero —se anularía la división.</div>
+
+    <div class="canvas-wrap"><canvas id="c2"></canvas></div>
+
+    <div class="controls">
+      <div class="control">
+        <label>Instante observado · t = <span class="value" id="v2t">2.00</span> s</label>
+        <input type="range" id="s2t" min="0.1" max="3.5" step="0.01" value="2">
+      </div>
+      <div class="control">
+        <label>Δt del intervalo = <span class="value" id="v2dt">1.000</span> s</label>
+        <input type="range" id="s2dt" min="0.001" max="1.5" step="0.001" value="1">
+      </div>
+    </div>
+
+    <div class="readout">
+      <div>Velocidad <em>media</em> en [t, t+Δt]: <span class="formula"><b id="r2med">25.0</b> m/s</span></div>
+      <div>Velocidad <em>instantánea</em> en t (límite): <span class="formula"><b id="r2inst">20.0</b> m/s</span></div>
+      <small>Con g = 10 m/s². Achicá Δt hasta 0.001 y verás cómo se aproximan los valores.</small>
+    </div>
+
+    <div class="resolution">
+      <strong>La derivada lo resuelve</strong>
+      v(t) = dy/dt = gt. La velocidad instantánea es la derivada de la posición. El mismo proceso del Problema 1, aplicado al tiempo.
+    </div>
+  </article>
+
+  <article class="problem" id="p3">
+    <div class="number">— Problema Tercero —</div>
+    <h2>Máximos y mínimos</h2>
+    <div class="historical">¿Con qué ángulo debe disparar un cañón para alcanzar la mayor distancia? Pregunta vital en la Europa en guerra del siglo XVII, estudiada por Galileo en Padua como problema de balística.</div>
+
+    <div class="canvas-wrap"><canvas id="c3"></canvas></div>
+
+    <div class="controls">
+      <div class="control">
+        <label>Ángulo de disparo · θ = <span class="value" id="v3a">45</span>°</label>
+        <input type="range" id="s3a" min="5" max="85" step="1" value="45">
+      </div>
+      <div class="control">
+        <label>Velocidad inicial · v₀ = <span class="value" id="v3v">30</span> m/s</label>
+        <input type="range" id="s3v" min="10" max="50" step="1" value="30">
+      </div>
+    </div>
+
+    <div class="readout">
+      <div>Alcance horizontal: <span class="formula"><b id="r3alc">91.8</b> m</span></div>
+      <div>Altura máxima alcanzada: <span class="formula"><b id="r3h">22.9</b> m</span></div>
+      <small>En el punto más alto la velocidad vertical es cero: dy/dt = 0. Probá ángulos cerca de 45°.</small>
+    </div>
+
+    <div class="resolution">
+      <strong>La derivada lo resuelve</strong>
+      En máximos y mínimos, la pendiente de la tangente es cero. Igualando f ′(x) = 0 se localizan los puntos críticos. El alcance es máximo a 45°.
+    </div>
+  </article>
+
+  <article class="problem" id="p4">
+    <div class="number">— Problema Cuarto —</div>
+    <h2>Área bajo una curva</h2>
+    <div class="historical">Arquímedes lo intentó hace dos milenios con polígonos inscritos. Kepler calculó volúmenes de barriles de vino. Faltaba un método general —y resultaba que el área bajo v(t) es la distancia recorrida.</div>
+
+    <div class="canvas-wrap"><canvas id="c4"></canvas></div>
+
+    <div class="controls">
+      <div class="control">
+        <label>Cantidad de rectángulos · n = <span class="value" id="v4n">8</span></label>
+        <input type="range" id="s4n" min="1" max="200" step="1" value="8">
+      </div>
+      <div class="control">
+        <label>Tiempo final · b = <span class="value" id="v4b">3.0</span> s</label>
+        <input type="range" id="s4b" min="0.5" max="5" step="0.1" value="3">
+      </div>
+    </div>
+
+    <div class="toggle-row">
+      <button class="toggle-btn active" data-method="left">Suma izquierda</button>
+      <button class="toggle-btn" data-method="right">Suma derecha</button>
+      <button class="toggle-btn" data-method="mid">Punto medio</button>
+    </div>
+
+    <div class="readout">
+      <div>Suma de Riemann (aproximación): <span class="formula"><b id="r4sum">42.19</b></span></div>
+      <div>Valor exacto de la integral: <span class="formula"><b id="r4exact">45.00</b></span></div>
+      <small>v(t) = 10t representa la velocidad en caída libre. La integral mide la distancia recorrida.</small>
+    </div>
+
+    <div class="resolution">
+      <strong>La integral lo resuelve</strong>
+      ∫₀^b 10t dt = 5b². El Teorema Fundamental une los cuatro problemas: derivar e integrar son operaciones inversas.
+    </div>
+  </article>
+
+</div>
+
+<section class="epilogue">
+  <h3>Y así nació un lenguaje nuevo</h3>
+  <p>Newton llamó <em>fluxiones</em> a las derivadas y <em>fluentes</em> a las cantidades que cambian. Leibniz escogió los símbolos dy/dx y ∫ —que aún usamos hoy—. Una amarga disputa de prioridad entre ambos ensombreció el resto de sus vidas.</p>
+  <p>Pero lo verdaderamente revolucionario fue la unidad oculta: <em>los cuatro problemas eran uno solo</em>. Tangentes y velocidades pertenecen a la derivada; áreas y acumulaciones, a la integral; y el Teorema Fundamental del Cálculo demuestra que ambas son la misma operación, hecha en sentidos opuestos.</p>
+  <p>Con esa herramienta, Newton escribió los <em>Principia Mathematica</em> en 1687 y dedujo las leyes de Kepler del movimiento planetario a partir de una sola fórmula: F = G·m₁m₂/r². Tres siglos más tarde, el cálculo sigue siendo el lenguaje del cambio.</p>
+  <div class="signature">· Finis ·</div>
+</section>
+
+<script>
+function setupCanvas(id){
+  const cnv = document.getElementById(id);
+  const ctx = cnv.getContext('2d');
+  function resize(){
+    const dpr = window.devicePixelRatio || 1;
+    const rect = cnv.getBoundingClientRect();
+    cnv.width = rect.width * dpr;
+    cnv.height = rect.height * dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  resize();
+  return {
+    cnv, ctx,
+    width: () => cnv.getBoundingClientRect().width,
+    height: () => cnv.getBoundingClientRect().height,
+    resize
+  };
+}
+
+function drawAxes(ctx, W, H, opts){
+  const {xmin,xmax,ymin,ymax,padding=34,xLabel,yLabel} = opts;
+  const px = x => padding + (x - xmin)/(xmax - xmin) * (W - 2*padding);
+  const py = y => H - padding - (y - ymin)/(ymax - ymin) * (H - 2*padding);
+
+  ctx.fillStyle = '#faf3e0';
+  ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle = 'rgba(110,80,40,0.025)';
+  for(let i=0;i<40;i++){
+    const x = Math.random()*W, y = Math.random()*H;
+    ctx.fillRect(x,y,1,1);
+  }
+
+  ctx.strokeStyle = 'rgba(74,56,38,0.08)';
+  ctx.lineWidth = 1;
+  const xRange = xmax - xmin, yRange = ymax - ymin;
+  const xStep = xRange <= 6 ? 1 : Math.max(1, Math.round(xRange/8));
+  const yStep = yRange <= 12 ? Math.max(1, Math.round(yRange/6)) : Math.max(1, Math.round(yRange/8));
+
+  for(let x=Math.ceil(xmin/xStep)*xStep; x<=xmax; x+=xStep){
+    ctx.beginPath(); ctx.moveTo(px(x), padding); ctx.lineTo(px(x), H-padding); ctx.stroke();
+  }
+  for(let y=Math.ceil(ymin/yStep)*yStep; y<=ymax; y+=yStep){
+    ctx.beginPath(); ctx.moveTo(padding, py(y)); ctx.lineTo(W-padding, py(y)); ctx.stroke();
+  }
+
+  ctx.strokeStyle = 'rgba(74,56,38,0.6)';
+  ctx.lineWidth = 1.3;
+  const y0 = (0 >= ymin && 0 <= ymax) ? py(0) : H - padding;
+  ctx.beginPath(); ctx.moveTo(padding, y0); ctx.lineTo(W-padding, y0); ctx.stroke();
+  const x0 = (0 >= xmin && 0 <= xmax) ? px(0) : padding;
+  ctx.beginPath(); ctx.moveTo(x0, padding); ctx.lineTo(x0, H-padding); ctx.stroke();
+
+  ctx.fillStyle = 'rgba(74,56,38,0.75)';
+  ctx.font = '11px "JetBrains Mono", monospace';
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  for(let x=Math.ceil(xmin/xStep)*xStep; x<=xmax; x+=xStep){
+    if(Math.abs(x)<1e-9) continue;
+    ctx.fillText(Number.isInteger(xStep)?x:x.toFixed(1), px(x), y0+4);
+  }
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  for(let y=Math.ceil(ymin/yStep)*yStep; y<=ymax; y+=yStep){
+    if(Math.abs(y)<1e-9) continue;
+    ctx.fillText(Number.isInteger(yStep)?y:y.toFixed(1), x0-4, py(y));
+  }
+
+  if(xLabel){
+    ctx.textAlign='right'; ctx.textBaseline='bottom';
+    ctx.font='italic 13px "EB Garamond", serif';
+    ctx.fillStyle='rgba(74,56,38,0.85)';
+    ctx.fillText(xLabel, W-6, H-padding-2);
+  }
+  if(yLabel){
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.font='italic 13px "EB Garamond", serif';
+    ctx.fillStyle='rgba(74,56,38,0.85)';
+    ctx.fillText(yLabel, x0+6, padding-2);
+  }
+
+  return {px, py};
+}
+
+/* PROBLEMA 1: TANGENTE */
+(function(){
+  const C = setupCanvas('c1');
+  const sx = document.getElementById('s1x'), sh = document.getElementById('s1h');
+  const vx = document.getElementById('v1x'), vh = document.getElementById('v1h');
+  const rsec = document.getElementById('r1sec'), rtan = document.getElementById('r1tan');
+  const f = x => x*x;
+
+  function draw(){
+    const W = C.width(), H = C.height();
+    const x0 = parseFloat(sx.value), h = parseFloat(sh.value);
+    vx.textContent = x0.toFixed(2);
+    vh.textContent = h.toFixed(2);
+
+    const {px, py} = drawAxes(C.ctx, W, H, {xmin:-3, xmax:3, ymin:-1, ymax:9, xLabel:'x', yLabel:'y = x²'});
+
+    C.ctx.strokeStyle = '#1e3a5f';
+    C.ctx.lineWidth = 2.2;
+    C.ctx.beginPath();
+    for(let i=0;i<=200;i++){
+      const x = -3 + 6*i/200;
+      const y = f(x);
+      if(i===0) C.ctx.moveTo(px(x), py(y));
+      else C.ctx.lineTo(px(x), py(y));
+    }
+    C.ctx.stroke();
+
+    const m = 2*x0;
+    const tanY = x => m*(x - x0) + f(x0);
+    C.ctx.strokeStyle = '#a02818';
+    C.ctx.lineWidth = 2;
+    C.ctx.beginPath();
+    C.ctx.moveTo(px(-3), py(tanY(-3)));
+    C.ctx.lineTo(px(3), py(tanY(3)));
+    C.ctx.stroke();
+
+    const x1 = x0 + h;
+    const slopeSec = (f(x1) - f(x0))/h;
+    const secY = x => slopeSec*(x - x0) + f(x0);
+    C.ctx.strokeStyle = '#8a6a1d';
+    C.ctx.lineWidth = 1.8;
+    C.ctx.setLineDash([6,4]);
+    C.ctx.beginPath();
+    C.ctx.moveTo(px(-3), py(secY(-3)));
+    C.ctx.lineTo(px(3), py(secY(3)));
+    C.ctx.stroke();
+    C.ctx.setLineDash([]);
+
+    C.ctx.strokeStyle = 'rgba(138,106,29,0.6)';
+    C.ctx.lineWidth = 1;
+    C.ctx.setLineDash([3,3]);
+    C.ctx.beginPath();
+    C.ctx.moveTo(px(x0), py(f(x0)));
+    C.ctx.lineTo(px(x1), py(f(x0)));
+    C.ctx.lineTo(px(x1), py(f(x1)));
+    C.ctx.stroke();
+    C.ctx.setLineDash([]);
+
+    function dot(x,y,color,r){
+      C.ctx.fillStyle=color;
+      C.ctx.beginPath();C.ctx.arc(px(x),py(y),r,0,Math.PI*2);C.ctx.fill();
+      C.ctx.strokeStyle='rgba(42,31,20,0.6)';
+      C.ctx.lineWidth=1;C.ctx.stroke();
+    }
+    dot(x0, f(x0), '#a02818', 6);
+    dot(x1, f(x1), '#8a6a1d', 5);
+
+    C.ctx.font='italic 13px "EB Garamond", serif';
+    C.ctx.fillStyle='#a02818';
+    C.ctx.textAlign='left';C.ctx.textBaseline='top';
+    C.ctx.fillText('— tangente', W-130, 12);
+    C.ctx.fillStyle='#8a6a1d';
+    C.ctx.fillText('-- secante', W-130, 30);
+
+    rsec.textContent = slopeSec.toFixed(2);
+    rtan.textContent = m.toFixed(2);
+  }
+  sx.addEventListener('input', draw);
+  sh.addEventListener('input', draw);
+  window.addEventListener('resize', () => { C.resize(); draw(); });
+  draw();
+})();
+
+/* PROBLEMA 2: VELOCIDAD INSTANTÁNEA */
+(function(){
+  const C = setupCanvas('c2');
+  const st = document.getElementById('s2t'), sdt = document.getElementById('s2dt');
+  const vt = document.getElementById('v2t'), vdt = document.getElementById('v2dt');
+  const rmed = document.getElementById('r2med'), rinst = document.getElementById('r2inst');
+  const g = 10;
+  const f = t => 0.5*g*t*t;
+
+  function draw(){
+    const W = C.width(), H = C.height();
+    const t0 = parseFloat(st.value), dt = parseFloat(sdt.value);
+    vt.textContent = t0.toFixed(2);
+    vdt.textContent = dt.toFixed(3);
+
+    const {px, py} = drawAxes(C.ctx, W, H, {xmin:0, xmax:4, ymin:0, ymax:80, xLabel:'t (s)', yLabel:'y(t) = ½gt²'});
+
+    C.ctx.strokeStyle = '#1e3a5f';
+    C.ctx.lineWidth = 2.2;
+    C.ctx.beginPath();
+    for(let i=0;i<=200;i++){
+      const t = 4*i/200;
+      const y = f(t);
+      if(i===0) C.ctx.moveTo(px(t), py(y));
+      else C.ctx.lineTo(px(t), py(y));
+    }
+    C.ctx.stroke();
+
+    const m = g*t0;
+    const tanY = t => m*(t - t0) + f(t0);
+    C.ctx.strokeStyle = '#a02818';
+    C.ctx.lineWidth = 2;
+    C.ctx.beginPath();
+    C.ctx.moveTo(px(0), py(Math.max(0, tanY(0))));
+    C.ctx.lineTo(px(4), py(Math.min(80, tanY(4))));
+    C.ctx.stroke();
+
+    const t1 = Math.min(4, t0 + dt);
+    const slopeSec = (f(t1) - f(t0))/(t1 - t0);
+    const secY = t => slopeSec*(t - t0) + f(t0);
+    C.ctx.strokeStyle = '#8a6a1d';
+    C.ctx.lineWidth = 1.8;
+    C.ctx.setLineDash([6,4]);
+    C.ctx.beginPath();
+    C.ctx.moveTo(px(0), py(Math.max(0, secY(0))));
+    C.ctx.lineTo(px(4), py(Math.min(80, secY(4))));
+    C.ctx.stroke();
+    C.ctx.setLineDash([]);
+
+    function dot(x,y,color,r){
+      C.ctx.fillStyle=color;C.ctx.beginPath();C.ctx.arc(px(x),py(y),r,0,Math.PI*2);C.ctx.fill();
+      C.ctx.strokeStyle='rgba(42,31,20,0.6)';C.ctx.lineWidth=1;C.ctx.stroke();
+    }
+    dot(t0, f(t0), '#a02818', 6);
+    dot(t1, f(t1), '#8a6a1d', 5);
+
+    rmed.textContent = slopeSec.toFixed(2);
+    rinst.textContent = m.toFixed(2);
+  }
+  st.addEventListener('input', draw);
+  sdt.addEventListener('input', draw);
+  window.addEventListener('resize', () => { C.resize(); draw(); });
+  draw();
+})();
+
+/* PROBLEMA 3: MÁXIMOS Y MÍNIMOS */
+(function(){
+  const C = setupCanvas('c3');
+  const sa = document.getElementById('s3a'), sv = document.getElementById('s3v');
+  const va = document.getElementById('v3a'), vv = document.getElementById('v3v');
+  const ralc = document.getElementById('r3alc'), rh = document.getElementById('r3h');
+  const g = 9.81;
+
+  function draw(){
+    const W = C.width(), H = C.height();
+    const ang = parseFloat(sa.value), v0 = parseFloat(sv.value);
+    va.textContent = ang;
+    vv.textContent = v0;
+
+    const rad = ang * Math.PI/180;
+    const vx0 = v0 * Math.cos(rad);
+    const vy0 = v0 * Math.sin(rad);
+    const tFlight = 2*vy0/g;
+    const range = vx0 * tFlight;
+    const hmax = vy0*vy0/(2*g);
+
+    const vmax = parseFloat(sv.max);
+    const xmax = (vmax*vmax)/g * 1.05;
+    const ymax = (vmax*vmax)/(2*g) * 1.05;
+
+    const {px, py} = drawAxes(C.ctx, W, H, {xmin:0, xmax:xmax, ymin:0, ymax:ymax, xLabel:'distancia (m)', yLabel:'altura (m)'});
+
+    [15,30,45,60,75].forEach(refAng => {
+      if(refAng === ang) return;
+      const r = refAng*Math.PI/180;
+      const rvx = v0*Math.cos(r), rvy = v0*Math.sin(r);
+      const rT = 2*rvy/g;
+      C.ctx.strokeStyle = 'rgba(74,56,38,0.18)';
+      C.ctx.lineWidth = 1;
+      C.ctx.beginPath();
+      for(let i=0;i<=100;i++){
+        const t = rT*i/100;
+        const x = rvx*t;
+        const y = rvy*t - 0.5*g*t*t;
+        if(i===0) C.ctx.moveTo(px(x), py(y));
+        else C.ctx.lineTo(px(x), py(y));
+      }
+      C.ctx.stroke();
+    });
+
+    C.ctx.strokeStyle = '#1e3a5f';
+    C.ctx.lineWidth = 2.4;
+    C.ctx.beginPath();
+    for(let i=0;i<=200;i++){
+      const t = tFlight*i/200;
+      const x = vx0*t;
+      const y = vy0*t - 0.5*g*t*t;
+      if(i===0) C.ctx.moveTo(px(x), py(y));
+      else C.ctx.lineTo(px(x), py(y));
+    }
+    C.ctx.stroke();
+
+    const tApex = vy0/g;
+    const xApex = vx0*tApex;
+    C.ctx.fillStyle = '#a02818';
+    C.ctx.beginPath();C.ctx.arc(px(xApex), py(hmax), 7, 0, Math.PI*2);C.ctx.fill();
+    C.ctx.strokeStyle='rgba(42,31,20,0.6)';C.ctx.lineWidth=1;C.ctx.stroke();
+
+    C.ctx.strokeStyle = '#a02818';
+    C.ctx.lineWidth = 1.8;
+    C.ctx.setLineDash([5,3]);
+    C.ctx.beginPath();
+    C.ctx.moveTo(px(Math.max(0, xApex-xmax*0.12)), py(hmax));
+    C.ctx.lineTo(px(Math.min(xmax, xApex+xmax*0.12)), py(hmax));
+    C.ctx.stroke();
+    C.ctx.setLineDash([]);
+
+    C.ctx.font='italic 12px "EB Garamond", serif';
+    C.ctx.fillStyle='#a02818';
+    C.ctx.textAlign='center';C.ctx.textBaseline='bottom';
+    C.ctx.fillText("dy/dt = 0", px(xApex), py(hmax)-10);
+
+    C.ctx.fillStyle='#2a1f14';
+    C.ctx.beginPath();C.ctx.arc(px(0), py(0), 5, 0, Math.PI*2);C.ctx.fill();
+
+    ralc.textContent = range.toFixed(1);
+    rh.textContent = hmax.toFixed(1);
+  }
+  sa.addEventListener('input', draw);
+  sv.addEventListener('input', draw);
+  window.addEventListener('resize', () => { C.resize(); draw(); });
+  draw();
+})();
+
+/* PROBLEMA 4: ÁREA / INTEGRAL */
+(function(){
+  const C = setupCanvas('c4');
+  const sn = document.getElementById('s4n'), sb = document.getElementById('s4b');
+  const vn = document.getElementById('v4n'), vb = document.getElementById('v4b');
+  const rsum = document.getElementById('r4sum'), rex = document.getElementById('r4exact');
+  let method = 'left';
+
+  document.querySelectorAll('#p4 .toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#p4 .toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      method = btn.dataset.method;
+      draw();
+    });
+  });
+
+  const f = t => 10*t;
+
+  function draw(){
+    const W = C.width(), H = C.height();
+    const n = parseInt(sn.value), b = parseFloat(sb.value);
+    vn.textContent = n;
+    vb.textContent = b.toFixed(1);
+
+    const xmax = 5.2;
+    const ymax = 55;
+    const {px, py} = drawAxes(C.ctx, W, H, {xmin:0, xmax:xmax, ymin:0, ymax:ymax, xLabel:'t (s)', yLabel:'v(t) = 10t (m/s)'});
+
+    const dx = b/n;
+    let suma = 0;
+    for(let i=0;i<n;i++){
+      const xL = i*dx, xR = (i+1)*dx;
+      let xSample;
+      if(method==='left') xSample = xL;
+      else if(method==='right') xSample = xR;
+      else xSample = (xL+xR)/2;
+      const height = f(xSample);
+      suma += height * dx;
+
+      C.ctx.fillStyle = 'rgba(160,40,24,0.25)';
+      C.ctx.strokeStyle = 'rgba(160,40,24,0.7)';
+      C.ctx.lineWidth = 1;
+      const rx = px(xL), ry = py(height);
+      const rw = px(xR) - px(xL);
+      const rhe = py(0) - py(height);
+      C.ctx.fillRect(rx, ry, rw, rhe);
+      C.ctx.strokeRect(rx, ry, rw, rhe);
+    }
+
+    C.ctx.strokeStyle = '#1e3a5f';
+    C.ctx.lineWidth = 2.4;
+    C.ctx.beginPath();
+    for(let i=0;i<=200;i++){
+      const x = xmax*i/200;
+      const y = f(x);
+      if(i===0) C.ctx.moveTo(px(x), py(y));
+      else C.ctx.lineTo(px(x), py(y));
+    }
+    C.ctx.stroke();
+
+    C.ctx.strokeStyle = 'rgba(74,56,38,0.5)';
+    C.ctx.setLineDash([4,3]);
+    C.ctx.beginPath();
+    C.ctx.moveTo(px(b), py(0));
+    C.ctx.lineTo(px(b), py(f(b)));
+    C.ctx.stroke();
+    C.ctx.setLineDash([]);
+    C.ctx.fillStyle='#2a1f14';
+    C.ctx.font='italic 13px "EB Garamond", serif';
+    C.ctx.textAlign='center';C.ctx.textBaseline='top';
+    C.ctx.fillText('b', px(b), py(0)+18);
+
+    const exacto = 5*b*b;
+    rsum.textContent = suma.toFixed(2);
+    rex.textContent = exacto.toFixed(2);
+  }
+  sn.addEventListener('input', draw);
+  sb.addEventListener('input', draw);
+  window.addEventListener('resize', () => { C.resize(); draw(); });
+  draw();
+})();
+</script>
+
+</body>
+</html>
